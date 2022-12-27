@@ -57,6 +57,7 @@
 #include "lib8tion.h"
 #include "pixeltypes.h"
 #include "hsv2rgb.h"
+#include "hsv2rgb.cpp" // adding this line fixes some import problems :S
 #include "colorutils.h"
 #include "pixelset.h"
 #include "colorpalettes.h"
