@@ -5,7 +5,7 @@
 
 #if __cplusplus <= 199711L
 
-#define static_assert(expression, message)
+/* #define static_assert(expression, message) */
 #define constexpr const
 
 #else

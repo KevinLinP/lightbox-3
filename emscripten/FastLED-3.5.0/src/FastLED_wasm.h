@@ -55,6 +55,7 @@
 #include "fastled_progmem.h"
 
 #include "lib8tion.h"
+#include "lib8tion.cpp" // adding this line fixes some import problems :S
 #include "pixeltypes.h"
 #include "hsv2rgb.h"
 #include "hsv2rgb.cpp" // adding this line fixes some import problems :S

@@ -1,23 +1,34 @@
 #include "FastLED-3.5.0/src/FastLED_wasm.h"
 /* #include "FastLED-3.5.0/src/hsv2rgb.h" */
 
-#define NUM_LEDS 3
+#define WIDTH 9
+#define HEIGHT 7
+#define NUM_LEDS 63
+
+CHSV leds[NUM_LEDS];
+CRGB leds_rgb[NUM_LEDS];
+bool directions[NUM_LEDS];
+
+void random_fill() {
+  for(int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = CHSV(0, 0, random8());
+    directions[i] = random8() >= 128;
+  }
+}
 
 extern "C" {
-  CHSV leds[NUM_LEDS];
-  CRGB leds_rgb[NUM_LEDS];
 
   CRGB * setup() { 
-    leds[0] = CHSV(0, 255, 255);
-    leds[1] = CHSV(85, 255, 255);
-    leds[2] = CHSV(190, 255, 255);
+    random_fill();
+
+    hsv2rgb_rainbow(leds, leds_rgb, NUM_LEDS);
 
     return leds_rgb;
   }
 
   void loop() {
     for(int i = 0; i < NUM_LEDS; i++) {
-      leds[i].hue += 1;
+      leds[i].value += 1;
     }
 
     hsv2rgb_rainbow(leds, leds_rgb, NUM_LEDS);
