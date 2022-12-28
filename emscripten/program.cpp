@@ -1,5 +1,4 @@
 #include "FastLED-3.5.0/src/FastLED_wasm.h"
-/* #include "FastLED-3.5.0/src/hsv2rgb.h" */
 
 #define WIDTH 9
 #define HEIGHT 7
@@ -10,15 +9,27 @@ CRGB leds_rgb[NUM_LEDS];
 bool directions[NUM_LEDS];
 char speed[NUM_LEDS];
 
+uint8_t random_speed() {
+  return random8() % 2 + 2;
+}
+
 void random_fill() {
   for(int i = 0; i < NUM_LEDS; i++) {
     leds[i] = CHSV(0, 0, random8());
     directions[i] = random8() >= 128;
-    speed[i] = random8() % 3 + 1;
+    speed[i] = random_speed();
   }
 }
 
 extern "C" {
+
+  uint8_t getWidth() {
+    return WIDTH;
+  }
+
+  uint8_t getHeight() {
+    return HEIGHT;
+  }
 
   CRGB * setup() { 
     random_fill();
@@ -34,7 +45,7 @@ extern "C" {
       leds[i].value -= speed[i];
 
       if (leds[i].value > previous_value) {
-        speed[i] = random8() % 3 + 1;
+        speed[i] = random_speed();
       }
     }
 

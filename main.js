@@ -3,57 +3,64 @@ import * as d3 from "d3";
 import './style.css'
 import init from './emscripten/program.wasm?init'
 
-const WIDTH = 9;
-const HEIGHT = 7;
-const NUM_LEDS = WIDTH * HEIGHT;
+// TODO
+// [ ] add frametimes/fps counter
 
-let counter = 0;
+const FPS = 60
+let counter = 0
+let width = 0
+let height = 0
+let numLeds = 0
+let leds1d = []
+let leds = []
+
+const svg = d3.select('#led-svg').attr('viewBox', '0 0 1200 900').style('background-color', 'black');
+const ledContainer = svg.select('#led-container').attr('transform', 'translate(37, 37)'); // .style('filter', 'url(#blur)');
+
+function updateSvg(ints) {
+  const leds1d = []
+  for (var i = 0; i < numLeds; i++) {
+    const start = i * 3;
+    const led = ints.slice(start, start + 3);
+    leds1d[i] = led
+  }
+
+  for (var y = 0; y < height; y++) {
+    const start = y * width
+    leds[y] = leds1d.slice(start, start + width)
+  }
+
+  const rowGroups = ledContainer.selectAll('g').data(leds)
+  rowGroups.enter().append('g').attr('transform', (d, i) => {return `translate(0, ${i * 100})`})
+
+  const squares = rowGroups.merge(rowGroups).selectAll('rect').data((d) => { return d;})
+  squares.enter().append('rect').attr('width', 25).attr('height', 25).attr('x', (d, i) => {return i * 100;})
+  squares.merge(squares).attr('fill', (d) => {
+    return `rgb(${d[0]}, ${d[1]}, ${d[2]})`
+  })
+}
+
+function updateCounter() {
+  counter += 1;
+  document.getElementById('counter').innerHTML = counter;
+}
 
 async function runWebassembly() {
   const instance = await init()
   // console.log(instance.exports);
+  const {setup, loop, getWidth, getHeight} = instance.exports
 
-  const {setup, loop} = instance.exports;
+  width = getWidth()
+  height = getHeight()
+  numLeds = width * height
   const ledsPointer = setup();
-
   const ints = new Uint8Array(instance.exports.memory.buffer, ledsPointer);
-
-  const svg = d3.select('#led-svg').attr('viewBox', '0 0 1200 900').style('background-color', 'black');
-  const ledContainer = svg.select('#led-container').attr('transform', 'translate(37, 37)'); // .style('filter', 'url(#blur)');
-
-  // const svg = d3.select("#leds");
-  console.log(svg);
 
   window.setInterval(() => {
     loop();
-
-    const leds1d = []
-    for (var i = 0; i < NUM_LEDS; i++) {
-      const start = i * 3;
-      const led = ints.slice(start, start + 3);
-      leds1d.push(led)
-    }
-
-    const leds = [];
-    for (var y = 0; y < HEIGHT; y++) {
-      const start = y * WIDTH;
-      leds.push(leds1d.slice(start, start + WIDTH))
-    }
-
-    const rowGroups = ledContainer.selectAll('g').data(leds);
-    rowGroups.enter().append('g').attr('transform', (d, i) => {return `translate(0, ${i * 100})`});
-
-    const squares = rowGroups.merge(rowGroups).selectAll('rect').data((d) => { return d;});
-    squares.enter().append('rect').attr('width', 25).attr('height', 25).attr('x', (d, i) => {return i * 100;});
-    squares.merge(squares).attr('fill', (d) => {
-      return `rgb(${d[0]}, ${d[1]}, ${d[2]})`;
-    });
-
-    counter += 1;
-
-    document.getElementById('counter').innerHTML = counter;
-
-  }, 1000 / 30)
+    updateSvg(ints);
+    updateCounter()
+  }, 1000 / FPS)
 }
 
 runWebassembly();
