@@ -7,6 +7,8 @@ const WIDTH = 9;
 const HEIGHT = 7;
 const NUM_LEDS = WIDTH * HEIGHT;
 
+let counter = 0;
+
 async function runWebassembly() {
   const instance = await init()
   // console.log(instance.exports);
@@ -46,6 +48,11 @@ async function runWebassembly() {
     squares.merge(squares).attr('fill', (d) => {
       return `rgb(${d[0]}, ${d[1]}, ${d[2]})`;
     });
+
+    counter += 1;
+
+    document.getElementById('counter').innerHTML = counter;
+
   }, 1000 / 30)
 }
 
