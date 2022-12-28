@@ -7,7 +7,22 @@
     <title>Vite App</title>
   </head>
   <body>
-    <div id="app"></div>
+      <svg
+        id="led-svg"
+        class="img-fluid"
+        version="1.1"
+        baseProfile="full"
+        xmlns="http://www.w3.org/2000/svg">
+
+        <filter id="blur">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+        </filter>
+
+        <g id="led-container"></g>
+      </svg>
+
+    <div id="counter">0</div>
+
     <script type="module" src="/main.js"></script>
   </body>
 </html>

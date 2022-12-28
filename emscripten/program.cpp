@@ -8,11 +8,13 @@
 CHSV leds[NUM_LEDS];
 CRGB leds_rgb[NUM_LEDS];
 bool directions[NUM_LEDS];
+char speed[NUM_LEDS];
 
 void random_fill() {
   for(int i = 0; i < NUM_LEDS; i++) {
     leds[i] = CHSV(0, 0, random8());
     directions[i] = random8() >= 128;
+    speed[i] = random8() % 3 + 1;
   }
 }
 
@@ -28,7 +30,12 @@ extern "C" {
 
   void loop() {
     for(int i = 0; i < NUM_LEDS; i++) {
-      leds[i].value += 1;
+      uint8_t previous_value = leds[i].value;
+      leds[i].value -= speed[i];
+
+      if (leds[i].value > previous_value) {
+        speed[i] = random8() % 3 + 1;
+      }
     }
 
     hsv2rgb_rainbow(leds, leds_rgb, NUM_LEDS);
