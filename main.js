@@ -4,7 +4,7 @@ import './style.css'
 import init from './emscripten/program.wasm?init'
 
 // TODO
-// [ ] add frametimes/fps counter
+// [x] add frametimes/fps counter
 
 const FPS = 60
 let counter = 0
@@ -48,16 +48,18 @@ function updateCounter() {
 async function runWebassembly() {
   const instance = await init()
   // console.log(instance.exports);
-  const {setup, loop, getWidth, getHeight} = instance.exports
+  const program = instance.exports
 
-  width = getWidth()
-  height = getHeight()
+  width = program.get_width()
+  height = program.get_height()
   numLeds = width * height
-  const ledsPointer = setup();
+  const ledsPointer = program.get_leds_pointer();
   const ints = new Uint8Array(instance.exports.memory.buffer, ledsPointer);
 
+  program.setup();
+
   window.setInterval(() => {
-    loop();
+    program.loop();
     updateSvg(ints);
     updateCounter()
   }, 1000 / FPS)

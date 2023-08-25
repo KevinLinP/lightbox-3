@@ -21,33 +21,36 @@ void random_fill() {
   }
 }
 
-extern "C" {
+void random_on_fade_off() {
+  for(int i = 0; i < NUM_LEDS; i++) {
+    uint8_t previous_value = leds[i].value;
+    leds[i].value -= speed[i];
 
-  uint8_t getWidth() {
+    if (leds[i].value > previous_value) {
+      speed[i] = random_speed();
+    }
+  }
+}
+
+extern "C" {
+  uint8_t get_width() { 
     return WIDTH;
   }
-
-  uint8_t getHeight() {
+  uint8_t get_height() {
     return HEIGHT;
   }
-
-  CRGB * setup() { 
-    random_fill();
-
-    hsv2rgb_rainbow(leds, leds_rgb, NUM_LEDS);
-
+  CRGB * get_leds_pointer() { 
     return leds_rgb;
   }
 
-  void loop() {
-    for(int i = 0; i < NUM_LEDS; i++) {
-      uint8_t previous_value = leds[i].value;
-      leds[i].value -= speed[i];
+  void setup() { 
+    /* random_fill(); */
 
-      if (leds[i].value > previous_value) {
-        speed[i] = random_speed();
-      }
-    }
+    hsv2rgb_rainbow(leds, leds_rgb, NUM_LEDS);
+  }
+
+  void loop() {
+    /* random_on_fade_off(); */
 
     hsv2rgb_rainbow(leds, leds_rgb, NUM_LEDS);
   }
