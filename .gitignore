@@ -1,3 +1,5 @@
+emscripten/program.wasm
+
 # Logs
 logs
 *.log
