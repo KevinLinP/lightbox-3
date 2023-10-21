@@ -16,9 +16,17 @@ uint8_t random_speed() {
   return random8() % 2 + 2;
 }
 
+uint8_t random_value() {
+  return random8() / 4 + 192;
+}
+
+uint8_t random_saturation() {
+  return random8() % 192 + 192;
+}
+
 void random_fill() {
   for(int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = CHSV(HUE, random8(), random8());
+    leds[i] = CHSV(HUE, random_saturation(), random_value());
     directions[i] = random8() >= 128;
     speed[i] = random_speed();
   }
@@ -63,8 +71,8 @@ extern "C" {
 
       if (leds[i].value > previous_value) {
         speed[i] = random_speed();
-        leds[i].hue = HUE;
-        leds[i].saturation = random8();
+        leds[i].saturation = random_saturation();
+        leds[i].value = random_value();
       }
     }
 
