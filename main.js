@@ -64,21 +64,30 @@ async function runWebassembly() {
   //   updateCounter()
   // }
 
-  window.setInterval(() => {
-    loop();
+  loop();
+
+  const runAndScheduleNextFrame = () => {
     updateSvg(ints);
+    const previousMillis = Date.now();
+
+    loop();
     updateCounter()
-  }, 1000 / FPS)
+
+    const millisToNextFrame = 8 - (Date.now() - previousMillis);
+
+    window.setTimeout(runAndScheduleNextFrame, millisToNextFrame)  
+  }
+
+  runAndScheduleNextFrame();
+
+  // window.setInterval(() => {
+  //   updateSvg(ints);
+  //   updateCounter()
+  //   loop();
+  // }, 1)
 }
 
-
-// runWebassembly();
-
+// wait for Emscripten to load
 Module.onRuntimeInitialized = function() {
-  const something = Module.ccall('getWidth', 'number', []);
-  console.log(something);
-  // The Emscripten runtime is fully loaded. You can now call the exported functions.
   runWebassembly();
 };
-
-
