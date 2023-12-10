@@ -1,4 +1,6 @@
-emscripten/program.*
+emscripten/program.cpp
+emscripten/program.js
+emscripten/program.wasm
 
 # Logs
 logs
