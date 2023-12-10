@@ -1,12 +1,12 @@
 import * as d3 from "d3";
 
 import './style.css'
-import init from './emscripten/program.wasm?init'
+// import init from './emscripten/program.wasm?init'
 
 // TODO
 // [ ] add frametimes/fps counter
 
-const FPS = 60
+const FPS = 120
 let counter = 0
 let width = 0
 let height = 0
@@ -46,15 +46,23 @@ function updateCounter() {
 }
 
 async function runWebassembly() {
-  const instance = await init()
+  // const instance = await init()
   // console.log(instance.exports);
-  const {setup, loop, getWidth, getHeight} = instance.exports
+  // const {setup, loop, getWidth, getHeight} = instance.exports
 
-  width = getWidth()
-  height = getHeight()
+  width = Module.ccall('getWidth', 'number', [])
+  height = Module.ccall('getHeight', 'number', [])
   numLeds = width * height
-  const ledsPointer = setup();
-  const ints = new Uint8Array(instance.exports.memory.buffer, ledsPointer);
+  const ledsPointer = Module.ccall('setup', 'number', [])
+  const loop = Module.cwrap('loop', null, [])
+  // const ints = new Uint8Array(instance.exports.memory.buffer, ledsPointer);
+  const ints = new Uint8Array(Module.HEAPU8.buffer, ledsPointer);
+
+  // while(true) {
+  //   loop();
+  //   updateSvg(ints);
+  //   updateCounter()
+  // }
 
   window.setInterval(() => {
     loop();
@@ -63,6 +71,14 @@ async function runWebassembly() {
   }, 1000 / FPS)
 }
 
-runWebassembly();
+
+// runWebassembly();
+
+Module.onRuntimeInitialized = function() {
+  const something = Module.ccall('getWidth', 'number', []);
+  console.log(something);
+  // The Emscripten runtime is fully loaded. You can now call the exported functions.
+  runWebassembly();
+};
 
 

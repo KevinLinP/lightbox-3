@@ -60,6 +60,7 @@
 #include "hsv2rgb.h"
 #include "hsv2rgb.cpp" // adding this line fixes some import problems :S
 #include "colorutils.h"
+#include "colorutils.cpp" // adding this line fixes some import problems :S
 #include "pixelset.h"
 #include "colorpalettes.h"
 
